@@ -17,15 +17,7 @@ public class HandleBox {
     private Properties pps;
     private int score;
     private int maxScore;
-
-    public Properties getPps() {
-        return pps;
-    }
-
-    public void setPps(Properties pps) {
-        this.pps = pps;
-    }
-
+    private static final String path = "src/com/jesing/game2048/max.properties";
     public int getMaxScore() {
         return maxScore;
     }
@@ -55,7 +47,7 @@ public class HandleBox {
     public void initMax(){
         FileInputStream inStream = null;
         try {
-             inStream = new FileInputStream("src/com/jesing/game2048/max.properties");
+             inStream = new FileInputStream(path);
             pps.load(inStream);
         } catch (IOException e) {
             System.out.println("找不到文件");
@@ -173,6 +165,9 @@ public class HandleBox {
      * @param num
      */
     public void awaken(int num){
+        if (this.unactivated.size()<num){
+            return;
+        }
         HashSet<Integer> set=new HashSet<>();
         while (set.size()!=num){
             int a=random.nextInt(unactivated.size());
@@ -189,7 +184,7 @@ public class HandleBox {
         if (this.score>maxScore){
             OutputStream os = null;
             try {
-                os=new FileOutputStream("src/com/jesing/game2048/max.properties");
+                os=new FileOutputStream(path);
             } catch (FileNotFoundException e) {
                 System.out.println("更新失败");
             }
@@ -213,6 +208,22 @@ public class HandleBox {
      */
     public boolean isEnd(){
         if (unactivated.size()==0){
+            for (int i = 0; i <= 12; i+=4) {
+                for (int j = 0; j <= 3; j++) {
+                    int index=i+j;
+                    if (index-1>=i&&gameBox[index].getScore()==gameBox[index-1].getScore()){
+                        return false;
+                    }
+                }
+            }
+            for (int i = 0; i <= 3; i++) {
+                for (int j = 0; j <= 12; j+=4) {
+                    int index=i+j;
+                    if (index-4>=i&&gameBox[index].getScore()==gameBox[index-4].getScore()){
+                        return false;
+                    }
+                }
+            }
             updateScore();
             return true;
         }
